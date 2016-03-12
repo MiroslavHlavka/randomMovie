@@ -8,23 +8,67 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>{ifset title}{include title|striptags} | {/ifset}Nette Sandbox</title>
+	<title>{ifset title}{include title|striptags} | RandomMovie{/ifset}</title>
 
 	<link rel="stylesheet" href="{$basePath}/css/style.css">
 	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
+
+    <!-- Bootstrap -->
+	<link rel="stylesheet" href="{$basePath}/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="{$basePath}/bootstrap/css/bootstrap-theme.min.css">
+
 	<meta name="viewport" content="width=device-width">
 	{block head}{/block}
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
-	{include content}
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+
+    <div class="container">
+        <!-- MENU-->
+        <nav class="navbar navbar-default">
+
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+
+              <a class="navbar-brand" href="#"><img class="pull-left" src="{$basePath}/favicon.ico" width="25px" height="25px" /> RG</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li><a n:href="Homepage:">Info <span class="sr-only">(current)</span></a></li>
+                <li><a n:href="Search:">Search Movie</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Random <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a n:href="Random:filters">Random with filters</a></li>
+                    <li><a n:href="Random:lucky">I'm feeling lucky</a></li>
+                  </ul>
+                </li>
+              </ul>
+
+            </div><!-- /.navbar-collapse -->
+         <!-- /.container-fluid -->
+        </nav>
+
+
+        {include content}
+
+
+    </div>
+
 
 	{block scripts}
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
+
+
+    <script src="{$basePath}/bootstrap/js/bootstrap.js"></script>
+
 	{/block}
 </body>
 </html>

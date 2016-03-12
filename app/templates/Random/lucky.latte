@@ -1,0 +1,36 @@
+{block title}
+    Feeling Lucky
+{/block}
+
+{block content}
+
+<div id="content">
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+    {ifset $item->poster_path}
+        <img src="http://image.tmdb.org/t/p/w185{$item->poster_path}" alt="{$result->title}">
+    {else}
+        <img src="https://assets.tmdb.org/assets/f996aa2014d2ffddfda8463c479898a3/images/no-poster-w185.jpg" alt="{$result->title}">
+    {/ifset}
+
+
+      <div class="caption">
+        <h3>{$result->title}</h3>
+        <p>{$result->overview}.</p>
+        <p><a href="https://www.themoviedb.org/movie/{$result->id}" class="btn btn-primary" role="button">Detail</a></p>
+      </div>
+    </div>
+  </div>
+
+    <a n:href='Random:lucky' class="btn btn-primary" role="button">Reroll</a>
+</div>
+{/block}
+
+{block scripts}
+{include parent}
+
+{/block}
+
+
+{block head}
+{/block}

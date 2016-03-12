@@ -3,6 +3,7 @@ body {
 	line-height: 1.6;
 	color: #333;
 	background: white;
+	text-align: center;
 }
 
 h1 {
@@ -47,4 +48,29 @@ form .required label {
 form .error {
 	color: #D00;
 	font-weight: bold;
+}
+
+#menu{
+	border: solid red 1px;
+}
+
+.navbar-brand img{
+	margin-right: 5px;
+}
+
+#content{
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	padding: 15px;
+}
+
+#content .page-header{
+	margin: 0 0 20px;
+}
+
+#frm-searchForm{
+	margin-bottom: 30px;
+}
+.thumbnail img{
+	padding-top: 15px;
 }
