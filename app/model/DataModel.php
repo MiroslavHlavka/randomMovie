@@ -25,7 +25,7 @@ class DataModel extends Object
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_URL => 'http://api.themoviedb.org/3/search/multi?query='.$search.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
+            CURLOPT_URL => 'http://api.themoviedb.org/3/search/movie?query='.$search.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
         ));
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
@@ -37,63 +37,85 @@ class DataModel extends Object
 
         $results = json_decode($output);
 
-        $return['movie'] = array();
-        $return['tv'] = array();
 
         foreach($results->results as $key=>$result){
-            if($result->media_type == 'movie'){
-                $result->overview = substr($result->overview,0,180)."...";
-                array_push($return['movie'], $result);
-            }elseif($result->media_type == 'tv'){
-                $result->overview = substr($result->overview,0,180)."...";
-                array_push($return['tv'], $result);
+            if(strlen($result->overview) > 180) {
+                $result->overview = substr($result->overview, 0, 180) . "...";
             }
+
         }
 
-        if(empty($return['tv']) AND empty($return['tv'])){
-            return null;
-        }else{
-            return $return;
-        }
-        return $return;
+
+        return $results->results;
 
 
     }
 
     public function lucky(){
 
-        $curl = curl_init();
-        $id = 561;
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_URL => 'http://api.themoviedb.org/3/tv/id='.$id.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
-        ));
+        $valid = false;
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            "Accept: application/json"
-        ));
+        $result = null;
+        while($valid == false){
+            $curl = curl_init();
+            $id = rand(1,30000);
 
-        $output = curl_exec($curl);
-        curl_close($curl);
+            curl_setopt_array($curl, array(
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_URL => 'http://api.themoviedb.org/3/movie/'.$id.'?api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
+            ));
 
-        $results = json_decode($output);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                "Accept: application/json"
+            ));
 
+            $output = curl_exec($curl);
+            curl_close($curl);
 
-        return $return;
+            $result = json_decode($output);
+
+            if(!isset($result->status_code)){
+                break;
+            }
+        }
+
+        if(strlen($result->overview) > 180) {
+            $result->overview = substr($result->overview, 0, 180) . "...";
+        }
+
+        $year = explode('-',$result->release_date);
+        $result->release_date = $year[0];
+
+        return $result;
 
 
     }
 
 
 
-    public function discover(){
+    public function discover(array $genres, $year, $sort){
+        $genreBuilder = '';
+        $yearBuilder = '';
+
+        foreach($genres as $genre){
+            if ($genre === end($genres)){
+                $genreBuilder .= $genre;
+            }else{
+                $genreBuilder .= $genre.',';
+            }
+
+        }
+
+        if($year != null){
+            $yearBuilder = '&primary_release_year='.$year;
+        }
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_URL => 'http://api.themoviedb.org/3/search/multi?query=&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
+            CURLOPT_URL => 'http://api.themoviedb.org/3/discover/movie?with_genres='.$genreBuilder.''.$yearBuilder.'&sort_by='.$sort.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
         ));
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
@@ -103,10 +125,15 @@ class DataModel extends Object
         $output = curl_exec($curl);
         curl_close($curl);
 
-        $results = json_decode($output);
-        $results = $results->results;
+        $data = json_decode($output);
 
-        return $results;
+        foreach($data->results as $key=>$result){
+            if(strlen($result->overview) > 180) {
+                $result->overview = substr($result->overview, 0, 180) . "...";
+            }
+        }
+
+        return  $data->results;
     }
 
 }

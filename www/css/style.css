@@ -10,6 +10,10 @@ h1 {
 	color: #3484D2;
 }
 
+a:hover{
+	text-decoration: none !important;
+}
+
 #ajax-spinner {
 	margin: 15px 0 0 15px;
 	padding: 13px;
@@ -74,3 +78,26 @@ form .error {
 .thumbnail img{
 	padding-top: 15px;
 }
+
+#lucky .thumbnail {
+	width: 380px;
+	margin: 15px auto;
+}
+
+#lucky .thumbnail > li {
+	display: inline-block;
+	*display:inline; /* ie7 fix */
+	float: none; /* this is the part that makes it work */
+}
+
+.star{
+	padding-left: 8px;
+	padding-top: 10px;
+	color: #ffc205;
+}
+
+.thumbnail{
+	height: 520px;
+}
+
+
