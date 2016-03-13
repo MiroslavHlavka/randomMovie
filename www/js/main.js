@@ -1,3 +1,4 @@
-$(function(){
-
+$(function () {
+    $.nette.init();
+    // And you fly...
 });

@@ -24,7 +24,6 @@ class RandomPresenter extends BasePresenter
 	}
 
 	public function renderFilters($page = 1, $genres = array(), $year, $sort ){
-
 		if($genres != array()){$genres = $genres[0];}
 
 		$data = new DataModel();
@@ -46,6 +45,9 @@ class RandomPresenter extends BasePresenter
 
 	public function createComponentFilters()
 	{
+		// getSession values
+		//->setDefaultValue($year)
+
 		$years = array();
 
 		for($i=intval(date("Y")); $i> 1960; $i--){
@@ -69,9 +71,9 @@ class RandomPresenter extends BasePresenter
 			'12' => 'Adventure',
 			'14' => 'Fantasy',
 			'878' => 'Sci-Fi',
-		));
+		))->setDefaultValue($this->getSession('filters')->genres);
 
-		$form->addSelect('year', 'Year:', $years)->setPrompt('None');
+		$form->addSelect('year', 'Year:', $years)->setPrompt('None')->setDefaultValue($this->getSession('filters')->year);
 
 		$form->addSelect('sort', 'Sort by:', array(
 			'original_title.asc' => 'Name ▲',
@@ -81,7 +83,7 @@ class RandomPresenter extends BasePresenter
 			'primary_release_date.asc' => 'Release date ▲',
 			'primary_release_date.desc' => 'Release date ▼',
 
-		));
+		))->setDefaultValue($this->getSession('filters')->sort);
 
 		$form->addSubmit('submit', 'Filter');
 		$form->onSuccess[] = array($this, 'filterFormSucceeded');
@@ -92,10 +94,51 @@ class RandomPresenter extends BasePresenter
 	}
 
 	public function filterFormSucceeded(UI\Form $form, $values){
+		$filters = $this->getSession('filters');
+		$filters->genres = $values['genres'];
+		$filters->year = $values['year'];
+		$filters->sort = $values['sort'];
 
+
+
+		//ulozit do sessionu values
 		$this->redirect('Random:filters',null, array($values['genres']), $values['year'], $values['sort']);
 
 	}
+
+	public function renderSearch($page=1, $value)
+	{
+		if($value != null){
+
+			$data = new DataModel();
+			$results = $data->search($value, $page);
+			$component = $this->getComponent('movieList');
+			$component->enable = true;
+			$component->results = $results->results;
+			$component->page = $page;
+			$component->totalPages = $results->total_pages;
+			$component->searched = $value;
+			$component->redrawControl();
+		}
+
+	}
+
+	public function createComponentSearchForm(){
+		$form = new UI\Form;
+		$form->addText('searchMovie', 'search');
+		$form->addSubmit('submit', 'Search');
+		$form->onSuccess[] = array($this, 'searchFormSucceeded');
+
+
+
+		return $form;
+	}
+
+	public function searchFormSucceeded(UI\Form $form, $values){
+
+		$this->redirect('Random:search',null, $values["searchMovie"]);
+	}
+
 
 	public function createComponentMovieList()
 	{

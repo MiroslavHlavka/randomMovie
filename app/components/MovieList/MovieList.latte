@@ -26,7 +26,8 @@
             </div>
         {/foreach}
     </div>
-        {if $presenter->name == 'Random'}
+
+        {if $presenter->action == 'filters'}
             {if $page != 1}
                 <a href={plink Random:filters, $page-1, array($genres), $year, $sort} class="btn btn-default btn-lg">
                   <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
@@ -44,9 +45,9 @@
             {/if}
         {/if}
 
-        {if $presenter->name == 'Search'}
+        {if $presenter->action == 'search'}
             {if $page != 1}
-                <a href={plink Search:default, $page-1, $searched} class="btn btn-default btn-lg">
+                <a href={plink Random:search, $page-1, $searched} class="btn btn-default btn-lg">
                   <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
                 </a>
             {/if}
@@ -56,7 +57,7 @@
             {/if}
 
             {if $page < $totalPages}
-                <a href={plink Search:default, $page+1, $searched} class="btn btn-default btn-lg">
+                <a href={plink Random:search, $page+1, $searched} class="btn btn-default btn-lg">
                   <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
                 </a>
             {/if}
