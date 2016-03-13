@@ -16,14 +16,31 @@ class RandomPresenter extends BasePresenter
 	/** @var  DataModel inject */
 	private $DataModel;
 
-	public function renderDefault()
-	{
-		$this->template->anyVariable = 'any value';
-	}
 
 	public function renderLucky(){
 		$data = new DataModel();
 		$this->template->result = $data->lucky();
+
+	}
+
+	public function renderFilters($page = 1, $genres = array(), $year, $sort ){
+
+		if($genres != array()){$genres = $genres[0];}
+
+		$data = new DataModel();
+		$results = $data->discover($genres, $year, $sort, $page);
+
+		$component = $this->getComponent('movieList');
+		$component->enable = true;
+		$component->results = $results->results;
+		$component->page = $page;
+		$component->totalPages = $results->total_pages;
+
+		$component->genres = $genres;
+		$component->year = $year;
+		$component->sort = $sort;
+
+		$component->redrawControl();
 
 	}
 
@@ -75,12 +92,8 @@ class RandomPresenter extends BasePresenter
 	}
 
 	public function filterFormSucceeded(UI\Form $form, $values){
-		$data = new DataModel();
-		$results = $data->discover($values['genres'], $values['year'], $values['sort']);
-		$component = $this->getComponent('movieList');
-		$component->enable = true;
-		$component->results = $results;
-		$component->redrawControl();
+
+		$this->redirect('Random:filters',null, array($values['genres']), $values['year'], $values['sort']);
 
 	}
 

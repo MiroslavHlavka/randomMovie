@@ -9,9 +9,31 @@
         <h1>Filter movies</h1>
     </div>
 
-    {control filters}
+
+<form n:name=filters class='form-horizontal'>
+
+    <div class="form-group">
+        <p><label n:name=year>Year: {input year}</label>
+    </div>
+    <div class="form-group">
+        <p><label n:name=sort>Sort: {input sort}</label>
+    </div>
+
+    <div class="form-group">
+        {foreach $form[genres]->items as $key => $label}
+
+            <label n:name="genres:$key"><input n:name="genres:$key"> {$label}</label>
+            {if $iterator->getCounter()%5 == 0}<br>{/if}
+
+        {/foreach}
+    </div>
+
+    <p><input n:name=submit class="btn btn-default">
+</form>
+
 
     {control movieList}
+
 </div>
 {/block}
 

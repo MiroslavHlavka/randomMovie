@@ -18,10 +18,21 @@ class SearchPresenter extends BasePresenter
 	/** @var  DataModel inject */
 	private $DataModel;
 
-	public function renderDefault()
+	public function renderDefault($page=1, $value)
 	{
-		$this->template->anyVariable = 'any value';
-		$this->template->test = 15;
+		if($value != null){
+
+			$data = new DataModel();
+			$results = $data->search($value, $page);
+			$component = $this->getComponent('movieList');
+			$component->enable = true;
+			$component->results = $results->results;
+			$component->page = $page;
+			$component->totalPages = $results->total_pages;
+			$component->searched = $value;
+			$component->redrawControl();
+		}
+
 	}
 
 	public function createComponentSearchForm(){
@@ -37,13 +48,7 @@ class SearchPresenter extends BasePresenter
 
 	public function searchFormSucceeded(UI\Form $form, $values){
 
-		$data = new DataModel();
-		$results = $data->search($values['searchMovie']);
-		$component = $this->getComponent('movieList');
-		$component->enable = true;
-		$component->results = $results;
-		$component->redrawControl();
-
+		$this->redirect('Search:default',null, $values["searchMovie"]);
 	}
 
 

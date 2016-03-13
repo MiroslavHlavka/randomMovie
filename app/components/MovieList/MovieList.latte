@@ -5,7 +5,6 @@
         <h2>Nothing found :(</h2>
     {else}
         {foreach $results as $item}
-            {dump $item}
             <div class="col-sm-6 col-md-4">
                 <a href="https://www.themoviedb.org/movie/{$item->id}">
                     <div class="thumbnail">
@@ -17,7 +16,7 @@
 
 
                         <div class="caption">
-                            <h3>{$item->title}</h3>
+                            <h3>{$item->title} ({$item->release_date})</h3>
                             <p>{$item->vote_average} / 10<span class="glyphicon glyphicon-star star" aria-hidden="true"></span></p>
                             <p>{$item->overview}.</p>
                         </div>
@@ -26,7 +25,43 @@
                 </a>
             </div>
         {/foreach}
+    </div>
+        {if $presenter->name == 'Random'}
+            {if $page != 1}
+                <a href={plink Random:filters, $page-1, array($genres), $year, $sort} class="btn btn-default btn-lg">
+                  <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                </a>
+            {/if}
+
+            {if $totalPages > 1}
+                {$page} / {$totalPages}
+            {/if}
+
+            {if $page < $totalPages}
+                <a href={plink Random:filters, $page+1, array($genres), $year, $sort} class="btn btn-default btn-lg">
+                  <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                </a>
+            {/if}
+        {/if}
+
+        {if $presenter->name == 'Search'}
+            {if $page != 1}
+                <a href={plink Search:default, $page-1, $searched} class="btn btn-default btn-lg">
+                  <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                </a>
+            {/if}
+
+            {if $totalPages > 1}
+                {$page} / {$totalPages}
+            {/if}
+
+            {if $page < $totalPages}
+                <a href={plink Search:default, $page+1, $searched} class="btn btn-default btn-lg">
+                  <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                </a>
+            {/if}
+        {/if}
     {/if}
 
-    </div>
+
 {/if}

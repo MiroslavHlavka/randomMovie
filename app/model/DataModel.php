@@ -19,13 +19,13 @@ class DataModel extends Object
     {
     }
 
-    public function search($search){
+    private function curl($url){
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_URL => 'http://api.themoviedb.org/3/search/movie?query='.$search.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
+            CURLOPT_URL => $url,
         ));
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
@@ -35,18 +35,26 @@ class DataModel extends Object
         $output = curl_exec($curl);
         curl_close($curl);
 
-        $results = json_decode($output);
+        return json_decode($output);
 
+    }
+
+    public function search($search, $page){
+
+        $query = 'http://api.themoviedb.org/3/search/movie?query='.$search.'&page='.$page.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc';
+        $results = $this->curl($query);
 
         foreach($results->results as $key=>$result){
             if(strlen($result->overview) > 180) {
                 $result->overview = substr($result->overview, 0, 180) . "...";
             }
 
+            $year = explode('-',$result->release_date);
+            $result->release_date = $year[0];
+
         }
 
-
-        return $results->results;
+        return $results;
 
 
     }
@@ -57,23 +65,10 @@ class DataModel extends Object
 
         $result = null;
         while($valid == false){
-            $curl = curl_init();
+
             $id = rand(1,30000);
-
-            curl_setopt_array($curl, array(
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_URL => 'http://api.themoviedb.org/3/movie/'.$id.'?api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
-            ));
-
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                "Accept: application/json"
-            ));
-
-            $output = curl_exec($curl);
-            curl_close($curl);
-
-            $result = json_decode($output);
+            $query = 'http://api.themoviedb.org/3/movie/'.$id.'?api_key=6983b1d914369f1fcc8b56b90ce9e2cc';
+            $result = $this->curl($query);
 
             if(!isset($result->status_code)){
                 break;
@@ -94,10 +89,9 @@ class DataModel extends Object
 
 
 
-    public function discover(array $genres, $year, $sort){
+    public function discover(array $genres, $year, $sort, $page=1){
         $genreBuilder = '';
         $yearBuilder = '';
-
         foreach($genres as $genre){
             if ($genre === end($genres)){
                 $genreBuilder .= $genre;
@@ -111,29 +105,21 @@ class DataModel extends Object
             $yearBuilder = '&primary_release_year='.$year;
         }
 
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_URL => 'http://api.themoviedb.org/3/discover/movie?with_genres='.$genreBuilder.''.$yearBuilder.'&sort_by='.$sort.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc',
-        ));
-
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            "Accept: application/json"
-        ));
-
-        $output = curl_exec($curl);
-        curl_close($curl);
-
-        $data = json_decode($output);
+        $query = 'http://api.themoviedb.org/3/discover/movie?with_genres='.$genreBuilder.''.$yearBuilder.'&sort_by='.$sort.'&page='.$page.'&api_key=6983b1d914369f1fcc8b56b90ce9e2cc';
+        $data = $this->curl($query);
 
         foreach($data->results as $key=>$result){
             if(strlen($result->overview) > 180) {
                 $result->overview = substr($result->overview, 0, 180) . "...";
             }
+
+            $year = explode('-',$result->release_date);
+            $result->release_date = $year[0];
         }
 
-        return  $data->results;
+
+
+        return  $data;
     }
 
 }
