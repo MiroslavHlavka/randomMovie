@@ -31,6 +31,12 @@ class RandomPresenter extends BasePresenter
 
 	}
 
+	public function renderRandom($genre){
+		$data = new DataModel();
+		$this->template->result = $data->random($genre);
+
+	}
+
 	public function renderFilters($page = 1, $genres = array(), $year, $sort ){
 		if($genres != array()){$genres = $genres[0];}
 
@@ -48,6 +54,48 @@ class RandomPresenter extends BasePresenter
 		$component->sort = $sort;
 
 		$component->redrawControl();
+
+	}
+
+	public function createComponentRandom(){
+
+		$session = $this->getSession('random'); // returns the whole Session
+		//dump($session->year);
+		if(!isset($session->random)){
+			$session->random = null;
+		}
+
+
+		$form = new UI\Form();
+
+		$form->addRadioList('genres', 'Genres:', array(
+			'35' => 'Comedy',
+			'18' => 'Drama',
+			'10749' => 'Romance',
+			'28' => 'Action',
+			'10751' => 'Family',
+			'10402' => 'Music',
+			'99' => 'Documentary',
+			'80' => 'Crime',
+			'53' => 'Thriller',
+			'10752' => 'War',
+			'27' => 'Horror',
+			'37' => 'Western',
+			'12' => 'Adventure',
+			'14' => 'Fantasy',
+			'878' => 'Sci-Fi',
+		))->setDefaultValue($this->getSession('random')->random);
+
+		$form->addSubmit('submit', 'Random');
+		$form->onSuccess[] = array($this, 'randomFormSucceeded');
+
+		return $form;
+	}
+	public function randomFormSucceeded(UI\Form $form, $values){
+		$session = $this->getSession('random'); // returns the whole Session
+		$session->random = $values['genres'];
+
+		$this->redirect('Random:random', $values['genres']);
 
 	}
 

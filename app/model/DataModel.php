@@ -55,8 +55,6 @@ class DataModel extends Object
         }
 
         return $results;
-
-
     }
 
     public function lucky(){
@@ -83,11 +81,45 @@ class DataModel extends Object
         $result->release_date = $year[0];
 
         return $result;
-
-
     }
 
+    public function random($genre){
 
+        $valid = false;
+
+        $result = null;
+        while($valid == false){
+
+            $id = rand(1,30000);
+            $query = 'http://api.themoviedb.org/3/movie/'.$id.'?api_key=6983b1d914369f1fcc8b56b90ce9e2cc';
+            $result = $this->curl($query);
+
+            if(!isset($result->status_code)){
+                if($genre != null){
+                    foreach($result->genres as $item){
+
+                        if($item->id == intval($genre)){
+                            break 2;
+                        }
+
+                    }
+                }else{
+                    break;
+                }
+
+
+            }
+        }
+
+        if(strlen($result->overview) > 180) {
+            $result->overview = substr($result->overview, 0, 180) . "...";
+        }
+
+        $year = explode('-',$result->release_date);
+        $result->release_date = $year[0];
+
+        return $result;
+    }
 
     public function discover(array $genres, $year, $sort, $page=1){
         $genreBuilder = '';
@@ -116,8 +148,6 @@ class DataModel extends Object
             $year = explode('-',$result->release_date);
             $result->release_date = $year[0];
         }
-
-
 
         return  $data;
     }
